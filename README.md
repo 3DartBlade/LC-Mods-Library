@@ -16,5 +16,5 @@ Currently updated for v45 of Lethal Company</br >
 * Scroll (Zoom)   | adjust zoom FOV
 
 ## Additional notes
-* I have added an include folder with the neccesary .dll files for building so you may modify keybinds and values and won't have to spend 3 hours figuring out why it won't build. Not like that happened...
-- 3DartBlade
+* I have added an include folder with the neccesary .dll files for building so you may modify keybinds and values and won't have to spend 3 hours figuring out why it won't build. Not like that happened...<br>
+*— 3DartBlade*
