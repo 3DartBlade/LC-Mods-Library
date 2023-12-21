@@ -36,62 +36,49 @@ namespace CameraPlus
             }
             catch (Exception) { CLog.L("Failed to Patch Update"); }
         }
-
-        public static float zoomFov = 30f;
-        static float originalFov = 0f;
+        static float targetFov = 90f;
+        static float originalFov = 90f;
+        static float currentFov = 90f;
+        static float regularFov = 90f;
+        static float zoomModifier = .5f;
         static Vector3 visorScale;
+        static int beforeItemSlot;
         private static void Awake() // runs x the amount of times there are players
         {
-            visorScale = new Vector3(0f, 0f, 0f);           
+            visorScale = new Vector3(0f, 0f, 0f);
         }
         private static void Prefix(PlayerControllerB __instance)
         {
-            originalFov = __instance.gameplayCamera.fieldOfView;
+            beforeItemSlot = __instance.currentItemSlot;
+            currentFov = __instance.gameplayCamera.fieldOfView;
             __instance.localVisor.localScale = visorScale;
-            var k = Keyboard.current;
-            if (k.leftCtrlKey.isPressed && k.tKey.wasPressedThisFrame || k.upArrowKey.wasPressedThisFrame || k.downArrowKey.wasPressedThisFrame)
-                ThirdPerson.On3rdPersonStart();
-
-            ThirdPerson.Camera3rdUpdate();
         }
         internal static void Postfix(PlayerControllerB __instance)
         {
             var mouse = Mouse.current;
 
-            if (mouse.middleButton.isPressed || mouse.forwardButton.wasPressedThisFrame)
-                zoomFov = 30f;
-
             try
             {
-                if (mouse.forwardButton.isPressed)
+                if (__instance.inTerminalMenu || __instance.IsInspectingItem)
+                    regularFov = 60;
+                else if (__instance.isSprinting)
+                    regularFov = originalFov * 1.125f;
+                else 
+                    regularFov = originalFov;
+
+                if (mouse.rightButton.isPressed)
                 {
                     float mouseWheel = mouse.scroll.ReadValue().y;
-                    if (mouseWheel > 0f && zoomFov > 10f)
-                        zoomFov -= 5f;
-                    else if (mouseWheel < 0f && zoomFov < 140f && zoomFov >= 10f)
-                        zoomFov += 5f;
-                    else if (mouseWheel > 0f && zoomFov <= 10f && zoomFov > 1f)
-                        zoomFov -= 1f;
-                    else if (mouseWheel < 0f && zoomFov <= 10f)
-                        zoomFov += 1f;
+                    if (mouseWheel > 0f)
+                        zoomModifier -= 0.01f;
+                    else if (mouseWheel < 0f)
+                        zoomModifier += 0.01f;
+                    zoomModifier = Mathf.Clamp(zoomModifier, 0.25f, 0.75f);
 
-                    __instance.gameplayCamera.fieldOfView = Mathf.Lerp(originalFov, zoomFov, Time.deltaTime * 10f);
-                    return;
+                    __instance.gameplayCamera.fieldOfView = Mathf.Lerp(currentFov, regularFov * zoomModifier, Time.deltaTime * 10f);
                 }
-
-                if (!mouse.forwardButton.isPressed)
-                {
-                    if (__instance.inTerminalMenu)
-                        zoomFov = 60f;
-                    else if (__instance.IsInspectingItem)
-                        zoomFov = 46f;
-                    //else if (__instance.isSprinting)
-                    //zoomFov *= 1.03f;
-                    else
-                        zoomFov = ThirdPerson.fov;
-
-                    __instance.gameplayCamera.fieldOfView = Mathf.Lerp(originalFov, zoomFov, Time.deltaTime * 10f);
-                }
+                else
+                    __instance.gameplayCamera.fieldOfView = Mathf.Lerp(currentFov, regularFov, Time.deltaTime * 10f);
             }
             catch { }
         }

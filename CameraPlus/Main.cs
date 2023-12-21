@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine.Diagnostics;
 
-[assembly: MelonInfo(typeof(CameraPlus.Mod), "Camera Plus", "0.0.1", "Cyconi")]
+[assembly: MelonInfo(typeof(CameraPlus.Mod), "Camera Plus - Alt", "0.0.1", "Cyconi, 3DartBlade")]
 [assembly: MelonGame(null, "Lethal Company")]
 
 namespace CameraPlus
@@ -23,11 +23,6 @@ namespace CameraPlus
             CLog.L("MelonLoader Detected! \n\n\t\t\t - Cyconi \n");
             CameraPatch.StartPatch();
             StartMsg.Msg();
-        }
-        public override void OnSceneWasInitialized(int buildIndex, string sceneName)
-        {
-            if (isPlayerInit)
-                ThirdPerson.On3rdPersonStart();
         }
     }
 
