@@ -9,7 +9,7 @@ Currently updated for v45 of Lethal Company</br >
 ## Features
 * Default FOV is 90°
 * Adjustable Zoom
-* Zoom effect while running
+* FOV effect while running
 
 ## Keybinds
 * Right click     | zoom
